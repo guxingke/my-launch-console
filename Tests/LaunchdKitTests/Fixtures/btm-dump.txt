@@ -1,0 +1,190 @@
+========================
+ Records for UID 501 : C6C818BE-44E6-4C49-A100-2D1B0F9B8E51
+========================
+
+ ServiceManagement migrated: true
+ LaunchServices registered: true
+
+ Items:
+
+ #1:
+                 UUID: 5DB974C8-DC96-410C-A6BB-3AD0956C314D
+                 Name: (null)
+       Developer Name: (null)
+                 Type: developer (0x20)
+                Flags: [  ] (0)
+          Disposition: [disabled, allowed, notified] (0xa)
+           Identifier: Unknown Developer
+                  URL: (null)
+           Generation: 113
+  Embedded Item Identifiers:
+    #1: homebrew.mxcl.openvpn
+
+ #2:
+                 UUID: 2B2E9E8B-DBDE-4985-AE42-DCCD3A7CC8A1
+                 Name: hapi
+       Developer Name: (null)
+                 Type: legacy agent (0x10008)
+                Flags: [ legacy ] (0x1)
+          Disposition: [enabled, allowed, notified] (0xb)
+           Identifier: 8.com.hapi.hub
+                  URL: /Users/501/Library/LaunchAgents/com.hapi.hub.plist
+      Executable Path: /Users/501/.local/bin/hapi
+           Generation: 74
+             Last Use: 2026-10-29 03:15:55-04:00
+    Parent Identifier: Unknown Developer
+
+ #3:
+                 UUID: 9C5405D2-659D-4E68-95E2-F63924E04003
+                 Name: hapi
+       Developer Name: (null)
+                 Type: legacy agent (0x10008)
+                Flags: [ legacy ] (0x1)
+          Disposition: [enabled, allowed, notified] (0xb)
+           Identifier: 8.com.hapi.runner
+                  URL: /Users/501/Library/LaunchAgents/com.hapi.runner.plist
+      Executable Path: /Users/501/.local/bin/hapi
+           Generation: 74
+             Last Use: 2026-10-29 03:15:55-04:00
+    Parent Identifier: Unknown Developer
+
+ #4:
+                 UUID: 7CF3249F-FFCE-47EC-9953-A330E1D29892
+                 Name: nginx
+       Developer Name: (null)
+                 Type: legacy agent (0x10008)
+                Flags: [ legacy ] (0x1)
+          Disposition: [enabled, disallowed, notified] (0x9)
+           Identifier: 8.homebrew.mxcl.nginx
+                  URL: /Library/LaunchAgents/homebrew.mxcl.nginx.plist
+      Executable Path: /opt/homebrew/opt/nginx/bin/nginx
+           Generation: 2
+    Parent Identifier: Unknown Developer
+
+ #5:
+                 UUID: 5C01CD0C-2FD6-4FF6-B13A-B1DD70E071A2
+                 Name: sing-box
+       Developer Name: (null)
+                 Type: legacy agent (0x10008)
+                Flags: [ legacy ] (0x1)
+          Disposition: [enabled, allowed, notified] (0xb)
+           Identifier: 8.homebrew.mxcl.sing-box
+                  URL: /Users/501/Library/LaunchAgents/homebrew.mxcl.sing-box.plist
+      Executable Path: /opt/homebrew/opt/sing-box/bin/sing-box
+           Generation: 159098
+             Last Use: 2026-10-28 05:18:37-04:00
+    Parent Identifier: Unknown Developer
+
+ #6:
+                 UUID: FB5E4DA2-6603-4F5B-ADBD-539D0FEEA4BB
+                 Name: supervisord
+       Developer Name: (null)
+                 Type: legacy agent (0x10008)
+                Flags: [ legacy ] (0x1)
+          Disposition: [enabled, disallowed, notified] (0x9)
+           Identifier: 8.homebrew.mxcl.supervisor
+                  URL: /Users/501/Library/LaunchAgents/homebrew.mxcl.supervisor.plist
+      Executable Path: /opt/homebrew/opt/supervisor/bin/supervisord
+           Generation: 2
+    Parent Identifier: Unknown Developer
+
+ #7:
+                 UUID: 26FC47AF-F6EB-4330-8351-C8B8E2904EC7
+                 Name: Creative Cloud Content Manager
+       Developer Name: Adobe Creative Cloud
+      Team Identifier: JQ525L2MZD
+                 Type: legacy agent (0x10008)
+                Flags: [ legacy, curated ] (0x5)
+          Disposition: [enabled, disallowed, not notified] (0x1)
+           Identifier: 8.com.adobe.ccxprocess
+                  URL: /Library/LaunchAgents/com.adobe.ccxprocess.plist
+      Executable Path: /Applications/Utilities/Adobe Creative Cloud Experience/CCXProcess/CCXProcess.app/Contents/MacOS/CCXProcess
+           Generation: 113
+             Last Use: 2026-10-24 04:30:44-04:00
+    Assoc. Bundle IDs: [ com.adobe.acc.AdobeCreativeCloud ]
+    Parent Identifier: Adobe Creative Cloud
+
+ #8:
+                 UUID: F04881D7-E0D6-49A7-AF63-97DACA578995
+                 Name: Docker
+       Developer Name: Docker Inc
+      Team Identifier: 9BNSXJN65R
+                 Type: app (0x2)
+                Flags: [  ] (0)
+          Disposition: [disabled, allowed, not notified] (0x2)
+           Identifier: 2.com.docker.docker
+                  URL: /Applications/Docker.app
+           Generation: 0
+    Bundle Identifier: com.docker.docker
+
+ #9:
+                 UUID: 252833C9-9FE1-4DF6-9ECA-DC4441AD9D8A
+                 Name: DockerHelper
+       Developer Name: Docker Inc
+      Team Identifier: 9BNSXJN65R
+                 Type: login item (0x4)
+                Flags: [  ] (0)
+          Disposition: [enabled, allowed, notified] (0xb)
+           Identifier: 4.com.docker.helper
+                  URL: Contents/Library/LoginItems/DockerHelper.app
+           Generation: 1
+    Bundle Identifier: com.docker.helper
+    Parent Identifier: 2.com.docker.docker
+
+ #10:
+                 UUID: DA272633-6E94-4845-999B-C18C80D681BF
+                 Name: Karabiner-Elements Non-Privileged Agents v2
+       Developer Name: Fumihiko Takayama
+      Team Identifier: G43BCU2T37
+                 Type: app (0x2)
+                Flags: [  ] (0)
+          Disposition: [disabled, allowed, not notified] (0x2)
+           Identifier: 2.org.pqrs.Karabiner-Elements-Non-Privileged-Agents-v2
+                  URL: /Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents v2.app
+           Generation: 1
+    Bundle Identifier: org.pqrs.Karabiner-Elements-Non-Privileged-Agents-v2
+
+ #11:
+                 UUID: 9A216C65-EA35-4077-B75B-8717BE81BEDB
+                 Name: Karabiner-Console-User-Server
+       Developer Name: Fumihiko Takayama
+      Team Identifier: G43BCU2T37
+                 Type: agent (0x8)
+                Flags: [  ] (0)
+          Disposition: [enabled, allowed, not notified] (0x3)
+           Identifier: 8.org.pqrs.service.agent.Karabiner-Console-User-Server
+                  URL: Contents/Library/LaunchAgents/org.pqrs.service.agent.Karabiner-Console-User-Server.plist
+      Executable Path: /Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Console-User-Server.app/Contents/MacOS/Karabiner-Console-User-Server
+           Generation: 145
+             Last Use: 2026-10-29 03:15:55-04:00
+    Parent Identifier: 2.org.pqrs.Karabiner-Elements-Non-Privileged-Agents-v2
+
+ #12:
+                 UUID: 2975EF86-D475-4FBC-8BC5-3A795846AC1C
+                 Name: Karabiner-Core-Service
+       Developer Name: Fumihiko Takayama
+      Team Identifier: G43BCU2T37
+                 Type: agent (0x8)
+                Flags: [  ] (0)
+          Disposition: [enabled, allowed, notified] (0xb)
+           Identifier: 8.org.pqrs.service.agent.Karabiner-Core-Service
+                  URL: Contents/Library/LaunchAgents/org.pqrs.service.agent.Karabiner-Core-Service.plist
+      Executable Path: /Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service
+           Generation: 1
+    Parent Identifier: 2.org.pqrs.Karabiner-Elements-Non-Privileged-Agents-v2
+
+ #13:
+                 UUID: 94B7786E-F8C8-4084-9005-019576711558
+                 Name: Karabiner-Core-Service
+       Developer Name: Fumihiko Takayama
+      Team Identifier: G43BCU2T37
+                 Type: agent (0x8)
+                Flags: [  ] (0)
+          Disposition: [enabled, allowed, not notified] (0x3)
+           Identifier: 8.org.pqrs.service.agent.Karabiner-Core-Service-rev2
+                  URL: Contents/Library/LaunchAgents/org.pqrs.service.agent.Karabiner-Core-Service.plist
+      Executable Path: /Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app/Contents/MacOS/Karabiner-Core-Service
+           Generation: 145
+             Last Use: 2026-10-29 03:15:55-04:00
+    Parent Identifier: 2.org.pqrs.Karabiner-Elements-Non-Privileged-Agents-v2
+

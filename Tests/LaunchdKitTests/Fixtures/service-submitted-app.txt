@@ -1,0 +1,142 @@
+gui/501/application.com.mitchellh.ghostty.197176821.197176826 = {
+	active count = 5
+	path = (submitted by runningboardd.437)
+	type = Submitted
+	managed_by = com.apple.runningboard
+	state = running
+	bundle id = com.mitchellh.ghostty
+
+	program = /Applications/Ghostty.app/Contents/MacOS/ghostty
+	arguments = {
+		/Applications/Ghostty.app/Contents/MacOS/ghostty
+	}
+
+	working directory = /
+
+	inherited environment = {
+		SSH_AUTH_SOCK => /var/run/com.apple.launchd.iDOSjXADc6/Listeners
+	}
+
+	default environment = {
+		PATH => /usr/bin:/bin:/usr/sbin:/sbin
+	}
+
+	environment = {
+		OSLogRateLimit => 64
+		USER => gxk
+		SECURITYSESSIONID => 186b4
+		GHOSTTY_MAC_LAUNCH_SOURCE => app
+		COMMAND_MODE => unix2003
+		__CFBundleIdentifier => com.mitchellh.ghostty
+		PATH => /usr/bin:/bin:/usr/sbin:/sbin
+		OSLogRateLimit => 64
+		HOME => /Users/gxk
+		SHELL => /bin/zsh
+		LaunchInstanceID => 81F640F2-95EA-4C06-9165-87E6D7DC4770
+		__CF_USER_TEXT_ENCODING => 0x1F5:0x0:0x0
+		XPC_SERVICE_NAME => application.com.mitchellh.ghostty.197176821.197176826
+	}
+
+	spawn constraint = {
+		"reqs" => {
+			"cdhash" => {
+				"$in" => [
+					0 = 					1 = 				]
+			}
+		}
+		"vers" => 1
+		"comp" => 1
+		"ccat" => 0
+	}
+
+	domain = gui/501 [100020]
+	asid = 100020
+	minimum runtime = 2147483647
+	exit timeout = 1
+	runs = 1
+	pid = 744
+	immediate reason = launch job demand
+	forks = 2
+	execs = 1
+	initialized = 1
+	trampolined = 1
+	started suspended = 1
+	proxy started suspended = 0
+	checked allocations = 0 (queried = 1)
+	checked allocations reason = no host
+	checked allocations flags = 0x0
+	spawn reason filter = launch job demand
+	last exit code = (never exited)
+
+	dynamic endpoints = {
+		"com.mitchellh.ghostty.ServiceProvider" = {
+			port = 0x8d90b
+			active = 1
+			managed = 0
+			reset = 0
+			hide = 0
+			watching = 0
+		}
+	}
+
+	pid-local endpoints = {
+		"com.apple.coredrag" = {
+			port = 0x1098c7
+			active = 1
+			managed = 0
+			reset = 0
+			hide = 0
+			watching = 0
+		}
+		"com.apple.axserver" = {
+			port = 0x9ed03
+			active = 1
+			managed = 0
+			reset = 0
+			hide = 0
+			watching = 0
+		}
+		"com.apple.tsm.portname" = {
+			port = 0xa0103
+			active = 1
+			managed = 0
+			reset = 0
+			hide = 0
+			watching = 0
+		}
+	}
+
+	persistent resource coalition = app<application.com.mitchellh.ghostty.197176821.197176826(501)>
+	resource coalition = {
+		ID = 822
+		type = resource
+		state = active
+		active count = 1
+		name = application.com.mitchellh.ghostty.197176821.197176826
+		bundle ID = com.mitchellh.ghostty
+	}
+
+	jetsam coalition = {
+		ID = 823
+		type = jetsam
+		state = active
+		active count = 1
+		name = application.com.mitchellh.ghostty.197176821.197176826
+		bundle ID = com.mitchellh.ghostty
+	}
+
+	spawn type = app (1)
+	spawn role = non-ui (3)
+	jetsam priority = 100
+	jetsam memory limit (active) = (unlimited)
+	jetsam memory limit (inactive) = (unlimited)
+	jetsamproperties category = app
+	submitted job. ignore execute allowed
+	jetsam thread limit = 512
+	cpumon = default
+	job state = running
+	platform = 1
+	sanitizer flags = 0x0
+
+	properties = dataless file mode | wait for debugger | app | abandon process group | disable pointer auth | has spawn constraint
+}

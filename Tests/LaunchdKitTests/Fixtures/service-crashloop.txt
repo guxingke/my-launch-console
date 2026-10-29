@@ -1,0 +1,76 @@
+gui/501/homebrew.mxcl.sing-box = {
+	active count = 0
+	path = /Users/gxk/Library/LaunchAgents/homebrew.mxcl.sing-box.plist
+	type = LaunchAgent
+	state = spawn scheduled
+
+	program = /opt/homebrew/opt/sing-box/bin/sing-box
+	arguments = {
+		/opt/homebrew/opt/sing-box/bin/sing-box
+		run
+		--config
+		/opt/homebrew/etc/sing-box/config.json
+		--directory
+		/opt/homebrew/var/lib/sing-box
+	}
+
+	inherited environment = {
+		SSH_AUTH_SOCK => /var/run/com.apple.launchd.iDOSjXADc6/Listeners
+	}
+
+	default environment = {
+		PATH => /usr/bin:/bin:/usr/sbin:/sbin
+	}
+
+	environment = {
+		OSLogRateLimit => 64
+		XPC_SERVICE_NAME => homebrew.mxcl.sing-box
+	}
+
+	LWCR = {
+		"reqs" => {
+			"cdhash" => {
+				"$in" => [
+					0 = 				]
+			}
+		}
+		"vers" => 1
+		"comp" => 1
+		"ccat" => 0
+	}
+
+	domain = gui/501 [100020]
+	asid = 100020
+	minimum runtime = 10
+	exit timeout = 5
+	runs = 21956
+	last exit code = 1
+
+	resource coalition = {
+		ID = 1084
+		type = resource
+		state = active
+		active count = 1
+		name = homebrew.mxcl.sing-box
+	}
+
+	jetsam coalition = {
+		ID = 1085
+		type = jetsam
+		state = active
+		active count = 1
+		name = homebrew.mxcl.sing-box
+	}
+
+	spawn type = daemon (3)
+	jetsam priority = 40
+	jetsam memory limit (active) = (unlimited)
+	jetsam memory limit (inactive) = (unlimited)
+	jetsamproperties category = daemon
+	jetsam thread limit = 32
+	cpumon = default
+	job state = exited
+	sanitizer flags = 0x0
+
+	properties = keepalive | runatload | inferred program | managed LWCR | has LWCR
+}

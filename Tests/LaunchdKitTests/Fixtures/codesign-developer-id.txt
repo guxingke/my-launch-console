@@ -1,0 +1,16 @@
+Executable=/Applications/Ghostty.app/Contents/MacOS/ghostty
+Identifier=com.mitchellh.ghostty
+Format=app bundle with Mach-O universal (x86_64 arm64)
+CodeDirectory v=20500 size=39809 flags=0x10000(runtime) hashes=1233+7 location=embedded
+Signature size=9056
+Authority=Developer ID Application: Mitchell Hashimoto (24VZTF6M5V)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Timestamp=Mar 13, 2026 at 12:08:10 PM
+Info.plist entries=50
+TeamIdentifier=24VZTF6M5V
+Runtime Version=26.2.0
+Sealed Resources version=2 rules=13 files=536
+Internal requirements count=1 size=184
+Total signatures=1
+Chosen signature=1
