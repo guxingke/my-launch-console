@@ -84,6 +84,16 @@ struct JobDetailView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
+                        if store.isLoadingLoginItems {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Button("Load App Names", systemImage: "person.crop.rectangle.stack") {
+                                store.reloadLoginItems()
+                            }
+                            .labelStyle(.iconOnly)
+                            .buttonStyle(.borderless)
+                            .help(loginItemsHelp)
+                        }
                         Button("Open Login Items Settings", systemImage: "gear") {
                             NSWorkspace.shared.open(BackgroundItems.settingsURL)
                         }
@@ -98,6 +108,12 @@ struct JobDetailView: View {
                 .font(.title2.bold())
                 .textSelection(.enabled)
         }
+    }
+
+    private var loginItemsHelp: String {
+        let base = "Look up app and developer names in Login Items (asks for your password, takes about 20 s)"
+        guard let updated = store.loginItemsUpdated else { return base }
+        return base + "\nLast loaded \(updated.formatted(.relative(presentation: .named)))"
     }
 
     private var issuesSection: some View {

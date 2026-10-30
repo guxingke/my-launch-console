@@ -31,6 +31,8 @@ struct LaunchConsoleApp: App {
             CommandGroup(after: .toolbar) {
                 Button("Refresh") { Task { await store.refresh() } }
                     .keyboardShortcut("r")
+                Button("Load Login Item App Names…") { store.reloadLoginItems() }
+                    .disabled(store.isLoadingLoginItems)
             }
         }
     }

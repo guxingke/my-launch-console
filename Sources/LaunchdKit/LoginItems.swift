@@ -32,7 +32,7 @@ public struct BackgroundItem: Sendable, Equatable {
 }
 
 /// What Login Items says about one job.
-public struct LoginItemInfo: Sendable, Equatable {
+public struct LoginItemInfo: Sendable, Equatable, Codable {
     public var isAllowed: Bool
     /// The app it belongs to, e.g. "Adobe Creative Cloud".
     public var appName: String?
@@ -119,6 +119,7 @@ public enum BackgroundItems {
     }
 
     /// Runs `sfltool dumpbtm`. Slow (around 20 s), so call it rarely and off the main thread.
+    /// macOS asks for an administrator password first, so only call it when the user asks.
     public static func dump() async -> [BackgroundItem]? {
         guard let result = try? await Command.run("/usr/bin/sfltool", ["dumpbtm"]), result.status == 0 else { return nil }
         let items = parse(dump: result.stdout)
@@ -136,6 +137,38 @@ public enum BackgroundItems {
     }
 
     public static let settingsURL = URL(string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension")!
+}
+
+/// The last `sfltool dumpbtm` result, kept on disk so app and developer names show at launch
+/// without asking for a password again.
+public struct LoginItemCache: Codable, Sendable, Equatable {
+    public var updated: Date
+    public var info: [String: LoginItemInfo]
+
+    public init(updated: Date = .now, info: [String: LoginItemInfo]) {
+        self.updated = updated
+        self.info = info
+    }
+
+    public static var defaultURL: URL {
+        URL.applicationSupportDirectory.appending(path: "LaunchConsole/login-items.json")
+    }
+
+    /// nil when there is no cache yet or it can't be read.
+    public static func load(from url: URL = defaultURL) -> LoginItemCache? {
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try? decoder.decode(LoginItemCache.self, from: data)
+    }
+
+    public func save(to url: URL = defaultURL) throws {
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        try encoder.encode(self).write(to: url, options: .atomic)
+    }
 }
 
 /// Decides when a watched job deserves a notification: when it starts failing, not on every

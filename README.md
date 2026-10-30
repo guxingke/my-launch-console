@@ -13,7 +13,10 @@ present but not loaded, disabled override, crash loops, KeepAlive job not runnin
   app-registered jobs, Apple jobs (hidden by default) and system daemons. Search, filter by
   status and source, refreshed every 2 s.
 - **Detail**: parsed plist fields plus raw XML, runtime state (PID, last exit, run count,
-  `launchctl blame`), code signature, owning app, Login Items status.
+  `launchctl blame`), code signature, owning app, Login Items status. The app and developer
+  names from Login Items need an administrator password (`sfltool dumpbtm`), so they load only
+  when you click the button on the Login Items row (or **View → Load Login Item App Names…**).
+  The result is cached and shown on later launches.
 - **Controls**: start, stop, restart, load, unload, enable, disable, using the modern
   `launchctl` verbs only (`kickstart`, `kill`, `bootstrap`, `bootout`, `enable`, `disable`).
   Each action shows the shell command it runs. Destructive actions ask for confirmation. The
@@ -41,7 +44,8 @@ present but not loaded, disabled override, crash loops, KeepAlive job not runnin
 
 Daemon actions don't use a persistent root helper. Each command goes through the standard
 macOS administrator prompt, and only after it passes a strict allowlist (see
-`Sources/LaunchdKit/Privileged.swift`).
+`Sources/LaunchdKit/Privileged.swift`). The script runs inside the app, so after one password
+macOS doesn't ask again for about five minutes, for this app only.
 
 ## Requirements
 
@@ -54,10 +58,26 @@ The app runs outside the App Sandbox, because launchctl can't be used from insid
 
 ```sh
 swift run LaunchConsole               # run directly
-scripts/build-app.sh                  # build/LaunchConsole.app (debug, ad-hoc signed)
+scripts/build-app.sh                  # build/LaunchConsole.app (debug)
 CONFIG=release scripts/build-app.sh   # release build
 open build/LaunchConsole.app
 ```
+
+### Code signing
+
+`build-app.sh` signs with, in order:
+
+1. `SIGN_IDENTITY` if set (`SIGN_IDENTITY=- scripts/build-app.sh` forces ad-hoc).
+2. The first `Apple Development` identity in the keychain.
+3. Ad-hoc.
+
+A free Apple ID is enough for step 2. In Xcode, open **Settings → Accounts**, add the Apple ID,
+then choose **Manage Certificates → + → Apple Development**. Check with
+`security find-identity -v -p codesigning`. If the identity shows up but isn't listed as valid,
+install Apple's
+[WWDR G3 intermediate](https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer). A
+development signature keeps the app's identity stable across rebuilds, so macOS permissions
+stick. It can't be notarized, so the app is only for your own Mac.
 
 `scripts/make-icon.sh` regenerates `Resources/AppIcon.icns` from `scripts/make-icon.swift`.
 
@@ -117,4 +137,5 @@ Dialogs and editors opened this way are inert previews: their buttons do nothing
 ## Data the app writes
 
 - Plist backups: `~/Library/Application Support/LaunchConsole/Backups/<label>/`
+- Login Items app names cache: `~/Library/Application Support/LaunchConsole/login-items.json`
 - Deleted plists go to the Trash.

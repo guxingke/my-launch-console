@@ -48,11 +48,21 @@ actor LaunchdSource {
         return jobs
     }
 
-    /// Re-reads the Login Items database. Returns false if sfltool gave nothing usable.
-    func reloadLoginItemDetails() async -> Bool {
-        guard let items = await BackgroundItems.dump() else { return false }
-        loginItemDetails = BackgroundItems.infoByLabel(items)
-        return true
+    /// Re-reads the Login Items database (asks for the admin password) and caches the result
+    /// on disk. Returns when it was read, or nil if sfltool gave nothing usable.
+    func reloadLoginItemDetails() async -> Date? {
+        guard let items = await BackgroundItems.dump() else { return nil }
+        let cache = LoginItemCache(info: BackgroundItems.infoByLabel(items))
+        loginItemDetails = cache.info
+        try? cache.save()
+        return cache.updated
+    }
+
+    /// Restores the last sfltool result from disk. No password needed. Returns its date.
+    func loadCachedLoginItemDetails() -> Date? {
+        guard let cache = LoginItemCache.load() else { return nil }
+        loginItemDetails = cache.info
+        return cache.updated
     }
 
     private func loginItems(for plists: [PlistJob]) -> [String: LoginItemInfo] {
@@ -133,11 +143,20 @@ final class JobStore {
     func startPolling() {
         guard polling == nil else { return }
         #if DEBUG
-        let loadLoginItems = !isReadOnlySession || DebugSnapshot.environment["LAUNCHCONSOLE_LOGINITEMS"] != nil
+        // Snapshots can opt in to a fresh sfltool read; normal launches only use the cache,
+        // because sfltool asks for an administrator password.
+        let reloadLoginItemsNow = DebugSnapshot.environment["LAUNCHCONSOLE_LOGINITEMS"] != nil
         #else
-        let loadLoginItems = true
+        let reloadLoginItemsNow = false
         #endif
-        if loadLoginItems { reloadLoginItems() }
+        if reloadLoginItemsNow {
+            reloadLoginItems()
+        } else if !isReadOnlySession {
+            Task {
+                if let date = await source.loadCachedLoginItemDetails() { loginItemsUpdated = date }
+                await refresh()
+            }
+        }
         polling = Task { [weak self] in
             while !Task.isCancelled {
                 await self?.refresh()
@@ -171,12 +190,13 @@ final class JobStore {
     private(set) var isLoadingLoginItems = false
     private(set) var loginItemsUpdated: Date?
 
-    /// Fetches app and developer names from Login Items. Takes about 20 s.
+    /// Fetches app and developer names from Login Items. Asks for the administrator password
+    /// and takes about 20 s, so it only runs when the user asks.
     func reloadLoginItems() {
         guard !isLoadingLoginItems else { return }
         isLoadingLoginItems = true
         Task {
-            if await source.reloadLoginItemDetails() { loginItemsUpdated = .now }
+            if let date = await source.reloadLoginItemDetails() { loginItemsUpdated = date }
             isLoadingLoginItems = false
             await refresh()
         }

@@ -1,7 +1,8 @@
 import Foundation
 
 /// Runs launchctl as root for system-domain actions, one command at a time, through the
-/// standard macOS administrator password dialog.
+/// standard macOS administrator password dialog. After one password, macOS lets this process
+/// skip the dialog for about five minutes.
 ///
 /// There is deliberately no persistent root helper: nothing listens for commands, so no other
 /// process can borrow root through this app. Each command is checked against a strict allowlist
@@ -72,33 +73,53 @@ public enum PrivilegedLaunchctl {
         "\"" + text.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"") + "\""
     }
 
-    /// Turns osascript's `0:74: execution error: <stderr> (<status>)` back into launchctl's own
-    /// message and exit status.
-    public static func parseFailure(_ stderr: String) -> (status: Int32, message: String) {
-        var text = stderr.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let range = text.range(of: "execution error: ") {
-            text = String(text[range.upperBound...])
-        }
-        var status: Int32 = 1
-        if text.hasSuffix(")"), let open = text.range(of: " (", options: .backwards),
-           let code = Int32(text[open.upperBound..<text.index(before: text.endIndex)]) {
-            status = code
-            text = String(text[..<open.lowerBound])
-        }
-        if status == cancelledStatus { return (status, "Cancelled. Nothing was changed.") }
+    /// Turns an AppleScript error (number + message) back into launchctl's own message and
+    /// exit status. For `do shell script`, the number is the exit status and the message is
+    /// the command's stderr.
+    public static func failure(number: Int32, message: String) -> (status: Int32, message: String) {
+        if number == cancelledStatus { return (number, "Cancelled. Nothing was changed.") }
+        var text = message.trimmingCharacters(in: .whitespacesAndNewlines)
         if text == "The command exited with a non-zero status." { text = "" }
-        let message = text
+        let cleaned = text
             .split(separator: "\n")
             .filter { !$0.hasPrefix("Try re-running the command as root") }
             .joined(separator: "\n")
-        return (status, message)
+        return (number, cleaned)
+    }
+
+    /// NSAppleScript instances must stay on one thread, so every script runs on this queue.
+    /// Off the main thread, NSAppleScript also needs the main run loop to be running (it is in
+    /// the app); without it, it hangs.
+    private static let queue = DispatchQueue(label: "LaunchConsole.PrivilegedLaunchctl")
+
+    /// Runs the script inside this process rather than through `osascript`. macOS then keeps the
+    /// administrator authorization for this process for about five minutes, so several actions
+    /// in a row need one password. Other processes can't use that authorization.
+    /// Returns nil on success, or the AppleScript error number and message.
+    static func execute(_ source: String) async -> (number: Int32, message: String)? {
+        await withCheckedContinuation { continuation in
+            queue.async {
+                guard let script = NSAppleScript(source: source) else {
+                    continuation.resume(returning: (1, "Couldn't build the AppleScript."))
+                    return
+                }
+                var errorInfo: NSDictionary?
+                script.executeAndReturnError(&errorInfo)
+                guard let errorInfo else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                let number = (errorInfo[NSAppleScript.errorNumber] as? NSNumber)?.int32Value ?? 1
+                let message = errorInfo[NSAppleScript.errorMessage] as? String ?? ""
+                continuation.resume(returning: (number, message))
+            }
+        }
     }
 
     public static func run(_ command: LaunchctlCommand, job: Job?) async throws {
         try validate(command)
-        let result = try await Command.run("/usr/bin/osascript", ["-e", appleScript(for: command)])
-        guard result.status != 0 else { return }
-        let (status, message) = parseFailure(result.stderr)
+        guard let error = await execute(appleScript(for: command)) else { return }
+        let (status, message) = failure(number: error.number, message: error.message)
         throw ActionFailure(
             command: command,
             status: status,

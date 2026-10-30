@@ -62,12 +62,30 @@ private func command(_ arguments: [String]) -> LaunchctlCommand {
         #expect(script.contains("launchctl bootout system/com.example.daemon\""))
     }
 
-    @Test func parsesRealOsascriptErrors() {
-        #expect(PrivilegedLaunchctl.parseFailure("0:74: execution error: Boot-out failed: 3: No such process (3)\n") == (3, "Boot-out failed: 3: No such process"))
-        #expect(PrivilegedLaunchctl.parseFailure("0:26: execution error: The command exited with a non-zero status. (113)") == (113, ""))
-        #expect(PrivilegedLaunchctl.parseFailure("0:99: execution error: User canceled. (-128)") == (-128, "Cancelled. Nothing was changed."))
-        #expect(PrivilegedLaunchctl.parseFailure("0:9: execution error: Bootstrap failed: 5: Input/output error\nTry re-running the command as root for richer errors. (5)")
+    @Test func interpretsAppleScriptErrors() {
+        // Messages as AppleScript reports them for `do shell script` (number = exit status).
+        #expect(PrivilegedLaunchctl.failure(number: 3, message: "Boot-out failed: 3: No such process\n") == (3, "Boot-out failed: 3: No such process"))
+        #expect(PrivilegedLaunchctl.failure(number: 113, message: "The command exited with a non-zero status.") == (113, ""))
+        #expect(PrivilegedLaunchctl.failure(number: -128, message: "User canceled.") == (-128, "Cancelled. Nothing was changed."))
+        #expect(PrivilegedLaunchctl.failure(number: 5, message: "Bootstrap failed: 5: Input/output error\nTry re-running the command as root for richer errors.")
             == (5, "Bootstrap failed: 5: Input/output error"))
+    }
+    // `execute` (NSAppleScript) isn't unit-tested: off the main thread it needs the main run
+    // loop, which the app has and the test runner doesn't.
+}
+
+@Suite struct LoginItemCacheTests {
+    @Test func roundTripsThroughDisk() throws {
+        let url = FileManager.default.temporaryDirectory
+            .appending(path: "LaunchConsoleTests-\(UUID().uuidString)/login-items.json")
+        defer { try? FileManager.default.removeItem(at: url.deletingLastPathComponent()) }
+        #expect(LoginItemCache.load(from: url) == nil)
+        let cache = LoginItemCache(
+            updated: Date(timeIntervalSince1970: 1_800_000_000),
+            info: ["com.adobe.ccxprocess": LoginItemInfo(isAllowed: true, appName: "Adobe Creative Cloud", developer: "Adobe Inc.")]
+        )
+        try cache.save(to: url)
+        #expect(LoginItemCache.load(from: url) == cache)
     }
 }
 
