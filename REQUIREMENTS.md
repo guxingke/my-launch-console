@@ -1,6 +1,7 @@
-# launchd Console — Requirements (draft v0.1)
+# launchd Console — Requirements
 
 A native macOS app for inspecting, controlling and authoring launchd jobs.
+Status: milestones M1–M6 built (2026-10-29). See [README.md](README.md) for building and running.
 Working name only — avoid "Console" in the final name (clashes with Apple's Console.app).
 
 ## Decisions so far
@@ -85,12 +86,17 @@ Use the modern verbs only; never the deprecated `load`/`unload`.
 - N4 Tolerant parsing: `launchctl print` output is not a stable API and changes between macOS releases. Isolate it behind one parser module with fixtures captured from real output; degrade gracefully on unknown fields.
 - N5 Edits are reversible (backups / Trash).
 
-## Architecture sketch
-- `LaunchdClient` — runs `launchctl` via `Process`, parses output → `ServiceState`.
-- `PlistStore` — reads/writes plists with `PropertyListSerialization`, FSEvents watcher.
-- `JobModel` — joins file + loaded state + override into `Job`, computes mismatches/health.
-- SwiftUI: `NavigationSplitView` (sidebar filters → job table → detail inspector).
-- Domain is a parameter everywhere (`gui/<uid>` now, `system` later) so F6.3 doesn't need a rewrite.
+## Architecture
+Planned as `LaunchdClient` / `PlistStore` / `JobModel`; as built:
+- **LaunchdKit** (library, no UI, unit-tested against captured output in `Tests/LaunchdKitTests/Fixtures`)
+  - `Launchctl` + `PrintParser` — runs `launchctl print`/`blame` via `Command`, parses into `DomainSnapshot` / `ServiceDetail` (N4: generic block parser, unknown fields kept).
+  - `PlistCatalog` / `PlistJob` — scans the agent/daemon directories, re-reads changed files by modification date.
+  - `Inventory` / `Diagnostics` — join file + loaded state + override into `Job`, compute `JobStatus` and `Issue`s.
+  - `JobAction` / `ActionPolicy` / `PrivilegedLaunchctl` — control verbs, per-job permissions, admin-prompt execution for `system`.
+  - `JobDefinition` / `Validator` / `PlistStore` / `EditPolicy` — editor model, validation, backed-up saves.
+  - `UnifiedLog` / `LogFileTail` / `Schedule` / `BackgroundItems` / `FailureWatcher` / `Signature` / `Ownership` — logs, timers, Login Items, notifications, signing.
+- **LaunchConsole** (SwiftUI app) — `JobStore` holds state and polls every 2 s; `NavigationSplitView` (sidebar scopes/filters → job table → detail), plus Schedule and Activity windows.
+- Domain is a parameter throughout (`gui/<uid>` and `system`).
 
 ## Milestones
 1. **M1 Read-only inspector** — F1, F2 (user domain). ✅ Built 2026-10-28. Deviation: F1.5 polls file modification dates every 2 s instead of FSEvents (≈500 stats, negligible), and leftover override entries are hidden unless filtered for.
@@ -101,7 +107,7 @@ Use the modern verbs only; never the deprecated `load`/`unload`.
 6. **M6 System domain** — F6.3. ✅ Built 2026-10-29. LaunchDaemons (`system` domain) are listed, inspected, logged and scheduled without root. **Changed from the plan:** no privileged helper. This Mac has no code-signing identity, so a root helper couldn't verify its caller and any local process could use it to run code as root. Instead each daemon action goes through the macOS admin password prompt (`osascript … with administrator privileges`), restricted to an allowlist (7 verbs, `system/` targets, bootstrap only from `/Library/LaunchDaemons`). Daemon plists stay read-only. A persistent helper is possible later with an Apple Development certificate.
 
 ## Open questions
-1. Minimum macOS version? (Personal tool → target the current release; to share it, macOS 14+ is a reasonable floor.)
-2. Distribution: personal local build only, or a signed + notarized app for others?
-3. App name.
-4. Should 3rd-party global agents in `/Library/LaunchAgents` (load into your GUI session but are root-owned files) be controllable in v1, or read-only until the privileged helper exists? *Proposal: control yes (it's your session), edit no.*
+1. ~~Minimum macOS version?~~ macOS 14 (`Package.swift`, `LSMinimumSystemVersion`).
+2. Distribution: personal local build only, or a signed + notarized app for others? (Currently ad-hoc signed by `scripts/build-app.sh`.) A signing identity would also allow a persistent privileged helper (M6).
+3. App name. (Still a working name; avoid "Console".)
+4. ~~Should 3rd-party global agents in `/Library/LaunchAgents` be controllable in v1?~~ Resolved in M2: control yes, edit no.
